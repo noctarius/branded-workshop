@@ -11,8 +11,7 @@ sudo apt -y install git postgresql-14 timescaledb-2-2.8.0-postgresql-14 timescal
 sudo timescaledb-tune  --quiet --yes
 sudo bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered) --confirm-root --confirm-install --skip-pi
 sudo mkdir -p /root/.node-red
-sudo curl -sL https://raw.githubusercontent.com/noctarius/branded-workshop/main/settings.js >> cat /root/.node-red/settings.js
-#sudo cp ./settings.js /root/.node-red/settings.js
+sudo wget https://raw.githubusercontent.com/noctarius/branded-workshop/main/settings.js -O /root/.node-red/settings.js
 sudo /bin/systemctl daemon-reload
 sudo systemctl enable nodered.service
 sudo systemctl enable postgresql@
