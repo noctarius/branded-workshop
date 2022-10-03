@@ -16,4 +16,3 @@ sudo /bin/systemctl daemon-reload
 sudo systemctl enable nodered.service
 sudo systemctl enable postgresql@
 sudo systemctl enable grafana-server
-reboot
