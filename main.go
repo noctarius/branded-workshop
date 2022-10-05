@@ -22,24 +22,30 @@ type message struct {
 }
 
 func main() {
+	fmt.Printf("Opening data.bin...\n")
 	i, err := os.Open("./data.bin")
 	if err != nil {
 		panic(err)
 	}
 	defer i.Close()
 
+	fmt.Printf("Setting up OS Signals...\n")
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	done := make(chan bool, 1)
 
+	fmt.Printf("Creating MQTT publisher...\n")
 	client, err := newPublisher()
 	if err != nil {
 		panic(err)
 	}
 
 	go func() {
+		fmt.Printf("Streaming data.bin...\n")
+
 		timestamp, typeId, value, err := read(i)
 		if err != nil {
+			fmt.Printf("Error: %v\n", err)
 			panic(err)
 		}
 
@@ -54,7 +60,7 @@ func main() {
 			now := time.Now()
 			comp := time.Date(now.Year(), now.Month(), now.Day(), timestamp.Hour(), timestamp.Minute(), timestamp.Second(), 0, now.Location())
 			if now.After(comp) && now.Add(-time.Second).Before(comp) {
-				fmt.Printf("Matching value: timestamp=%v, type=%d, value=%0.2f\n", timestamp, typeId, value)
+				fmt.Printf("Matching record: timestamp=%v, type=%d, value=%0.2f\n", timestamp, typeId, value)
 
 				// send mqtt
 				msg := message{
@@ -67,6 +73,7 @@ func main() {
 					panic(err)
 				}
 				if err := client.publish(data); err != nil {
+					fmt.Printf("Error: %v\n", err)
 					panic(err)
 				}
 
@@ -76,15 +83,17 @@ func main() {
 					if err == io.EOF {
 						break
 					}
+					fmt.Printf("Error: %v\n", err)
 					panic(err)
 				}
-			} else if comp.Before(now.Add(-time.Second)) {
+			} else if comp.Before(now.Add(-time.Second)) || comp.After(now.Add(time.Minute)) {
 				// skip record
 				timestamp, typeId, value, err = read(i)
 				if err != nil {
 					if err == io.EOF {
 						return
 					}
+					fmt.Printf("Error: %v\n", err)
 					panic(err)
 				}
 			}
@@ -122,7 +131,7 @@ func newPublisher() (*pahoPublisher, error) {
 }
 
 func (p *pahoPublisher) reconnect() {
-	conn, err := net.Dial("tcp", "localhost")
+	conn, err := net.Dial("tcp", "10.96.1.25:1883")
 	if err != nil {
 		panic(err)
 	}
