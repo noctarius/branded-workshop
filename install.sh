@@ -13,6 +13,8 @@ sudo bash -c 'bash <(curl -sL "https://raw.githubusercontent.com/node-red/linux-
 sudo mkdir -p /root/.node-red
 sudo wget https://raw.githubusercontent.com/noctarius/branded-workshop/main/prepare.sh
 sudo chmod +x prepare.sh
+sudo wget https://github.com/noctarius/branded-workshop/raw/main/event-generator
+sudo chmod +x event-generator
 sudo wget https://raw.githubusercontent.com/noctarius/branded-workshop/main/settings.tar.gz -O /root/.node-red/settings.tar.gz
 sudo tar xvfz /root/.node-red/settings.tar.gz
 sudo rm /root/.node-red/settings.tar.gz
