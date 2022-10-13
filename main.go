@@ -131,7 +131,7 @@ func newPublisher() (*pahoPublisher, error) {
 }
 
 func (p *pahoPublisher) reconnect() {
-	conn, err := net.Dial("tcp", "10.96.1.25:1883")
+	conn, err := net.Dial("tcp", "localhost:1883")
 	if err != nil {
 		panic(err)
 	}
